@@ -1,0 +1,6 @@
+Flask>=2.3
+pandas>=1.0
+numpy>=1.18
+scikit-learn>=0.24
+Werkzeug>=2.3
+whois>=0.9

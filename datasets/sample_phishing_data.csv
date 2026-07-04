@@ -1,0 +1,26 @@
+url,domain_length,special_chars,https,hyphens,dots,numeric_chars,@ symbol,label
+https://www.google.com,11,3,1,0,2,0,0,0
+https://www.facebook.com,14,2,1,0,2,0,0,0
+https://www.amazon.com,11,2,1,0,2,0,0,0
+https://www.github.com,10,2,1,0,2,0,0,0
+https://www.wikipedia.org,13,2,1,0,2,0,0,0
+https://www.youtube.com,11,2,1,0,2,0,0,0
+https://www.reddit.com,10,2,1,0,2,0,0,0
+https://www.stackoverflow.com,19,2,1,0,2,0,0,0
+http://gogle.com,10,2,0,0,1,0,0,1
+http://bit-bank-secure.xyz,20,3,0,1,2,0,0,1
+https://paypa1-verify.com,18,2,1,0,2,1,0,1
+http://amaz0n-account.xyz,19,2,0,1,2,1,0,1
+http://micr0soft-office365.com,24,2,0,1,2,2,0,1
+https://apple-id-verify.zip,20,3,1,1,2,0,0,1
+http://bank-secure-verify.com,21,3,0,0,3,0,0,1
+https://150.23.45.67/paypal,24,3,1,0,3,7,0,1
+http://linked1n-official.com,20,2,0,1,2,1,0,1
+https://www.google.com,11,3,1,0,2,0,0,0
+https://github.com,10,2,1,0,1,0,0,0
+https://twitter.com,11,2,1,0,1,0,0,0
+https://www.linkedin.com,12,2,1,0,2,0,0,0
+http://gogle.co,9,2,0,0,1,0,0,1
+https://secure-login.xyz,17,3,1,1,2,0,0,1
+http://fb-verify.net,11,2,0,0,1,0,0,1
+https://www.medium.com,12,2,1,0,2,0,0,0

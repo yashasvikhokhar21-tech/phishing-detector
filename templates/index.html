@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phishing Website Detector</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container navbar-top">
+            <div class="navbar-content">
+                <h1 class="logo">🛡️ Phishing Detector</h1>
+                <p class="tagline">AI-Powered URL Safety Checker</p>
+            </div>
+            <button id="theme-toggle" class="btn btn-secondary">Dark Mode</button>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div class="hero">
+            <h2>Check if a Website is Safe</h2>
+            <p>Use our machine learning model to detect phishing attempts and stay safe online</p>
+        </div>
+        <div class="status-cards">
+            <div class="status-card status-total">
+                <span>Total Checks</span>
+                <strong id="summary-total">0</strong>
+            </div>
+            <div class="status-card status-safe">
+                <span>Safe URLs</span>
+                <strong id="summary-safe">0</strong>
+            </div>
+            <div class="status-card status-phishing">
+                <span>Phishing URLs</span>
+                <strong id="summary-phishing">0</strong>
+            </div>
+        </div>
+
+        {% if not model_loaded %}
+        <div class="alert alert-warning">
+            <strong>⚠️ Model Not Loaded</strong>
+            <p>Please train the model first by running: <code>python ml/train_model.py</code></p>
+        </div>
+        {% endif %}
+
+        <div class="content-grid">
+            <!-- Single URL Check -->
+            <section class="card">
+                <h3>🔍 Check Single URL</h3>
+                <div class="form-group">
+                    <label for="url-input">Enter URL:</label>
+                    <input 
+                        type="text" 
+                        id="url-input" 
+                        placeholder="https://example.com" 
+                        class="input-field"
+                    >
+                    <div id="url-validation" class="input-help"></div>
+                    <button onclick="checkUrl()" class="btn btn-primary">Analyze URL</button>
+                </div>
+
+                <div id="single-result" class="result-container" style="display: none;">
+                    <div class="result-card">
+                        <div id="result-status"></div>
+                        <div id="result-dashboard" class="result-dashboard"></div>
+                        <div id="result-details"></div>
+                        <div class="result-actions">
+                            <button id="copy-result-btn" class="btn btn-secondary btn-sm" onclick="copyResult()">Copy Result</button>
+                            <span id="copy-feedback" class="copy-feedback"></span>
+                        </div>
+                        <div id="rule-reasons" class="rule-reasons"></div>
+                        <details>
+                            <summary>View Extracted Features</summary>
+                            <div id="features-list"></div>
+                        </details>
+                    </div>
+                </div>
+
+                <div id="error-message" class="alert alert-danger" style="display: none;"></div>
+                <div id="loading" class="loading" style="display: none;">Analyzing...</div>
+            </section>
+
+            <!-- Batch URL Check -->
+            <section class="card">
+                <h3>📋 Check Multiple URLs</h3>
+                <div class="form-group">
+                    <label for="batch-input">Enter URLs (one per line):</label>
+                    <textarea 
+                        id="batch-input" 
+                        placeholder="https://example1.com&#10;https://example2.com&#10;https://example3.com"
+                        class="input-field"
+                        rows="6"
+                    ></textarea>
+                    <button onclick="checkBatch()" class="btn btn-primary">Analyze URLs</button>
+                    <br><br>
+                    <button onclick="exportBatchResults()" class="btn btn-secondary btn-sm" type="button">Export CSV</button>
+                </div>
+
+                <div id="batch-result" class="result-container" style="display: none;">
+                    <div class="result-summary">
+                        <p>Total URLs: <span id="total-urls">0</span></p>
+                        <p>Phishing Detected: <span id="phishing-count">0</span></p>
+                        <p>Safe URLs: <span id="safe-count">0</span></p>
+                        <p>Errors: <span id="error-count">0</span></p>
+                    </div>
+                    <div id="batch-results-list"></div>
+                </div>
+
+                <div id="batch-error" class="alert alert-danger" style="display: none;"></div>
+                <div id="batch-loading" class="loading" style="display: none;">Analyzing...</div>
+            </section>
+        </div>
+
+        <section class="card helper-card">
+            <h3>⚡ Quick Tools</h3>
+            <div class="helper-grid">
+                <div class="helper-item">
+                    <h4>Example URLs</h4>
+                    <div class="example-tags">
+                        <button type="button" class="example-tag" onclick="fillExample('http://123.45.67.89/login')">IP Address</button>
+                        <button type="button" class="example-tag" onclick="fillExample('http://login-secure-bank.com')">Phishing Style</button>
+                        <button type="button" class="example-tag" onclick="fillExample('http://example.com/user@update')">Contains @</button>
+                        <button type="button" class="example-tag" onclick="fillExample('https://google.com')">Legitimate</button>
+                    </div>
+                </div>
+                <div class="helper-item">
+                    <h4>Recent Checks</h4>
+                    <ul id="history-list" class="history-list"></ul>
+                    <br>
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="clearHistory()">Clear History</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Information Section -->
+        <section class="card info-card">
+            <h3>ℹ️ How It Works</h3>
+            <div class="info-grid">
+                <div class="info-item">
+                    <h4>🔗 URL Analysis</h4>
+                    <p>The model analyzes 8 key features of URLs including length, domain characteristics, and special patterns.</p>
+                </div>
+                <div class="info-item">
+                    <h4>🤖 Machine Learning</h4>
+                    <p>Uses a Random Forest classifier trained on legitimate and phishing URLs for accurate detection.</p>
+                </div>
+                <div class="info-item">
+                    <h4>⚡ Real-Time</h4>
+                    <p>Get instant predictions with confidence scores to help you make informed browsing decisions.</p>
+                </div>
+                <div class="info-item">
+                    <h4>🔒 Privacy</h4>
+                    <p>Analysis happens locally on your server. URLs are not stored or logged permanently.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Explained -->
+        <section class="card">
+            <h3>📊 Analyzed Features</h3>
+            <ul class="features-list">
+                <li><strong>URL Length:</strong> Phishing URLs tend to be longer</li>
+                <li><strong>Dots Count:</strong> Multiple dots can indicate suspicious domains</li>
+                <li><strong>Hyphens in Domain:</strong> Legitimate domains rarely use hyphens</li>
+                <li><strong>@ Symbol:</strong> Presence often indicates spoofing attempts</li>
+                <li><strong>HTTPS Protocol:</strong> Legitimate sites use secure HTTPS</li>
+                <li><strong>Domain Length:</strong> Unusual domain lengths may be suspicious</li>
+                <li><strong>Numeric Ratio:</strong> High numeric content can be suspicious</li>
+                <li><strong>Special Characters:</strong> Excessive special characters are suspicious</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2024 Phishing Website Detector | Built with Flask & Machine Learning</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
